@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Student Expense Tracker</title>
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="Private offline student expense tracker for daily, weekly and monthly spending.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <style>
+    :root {
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-alt: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-on-primary: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-light: #fef2f2;
+      --border: #e2e8f0;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-pill: 9999px;
+      --nav-height: 64px;
+      --header-height: 56px;
+      --max-width: 900px;
+    }
+
+    [data-theme="dark"] {
+      --bg-body: #090d16;
+      --bg-card: #131b2e;
+      --bg-card-alt: #1a243a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --primary-light: #1e293b;
+      --border: #1e293b;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      --danger-light: #2d1619;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: calc(var(--nav-height) + 24px);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Container */
+    .app-container {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Sticky Header */
+    header.sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+    }
+    .header-quick-add {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* Typography & Display */
+    .currency-display {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .text-sm { font-size: 0.825rem; }
+    .text-xs { font-size: 0.75rem; }
+    .text-muted { color: var(--text-muted); }
+    .text-danger { color: var(--danger); }
+    .text-success { color: var(--success); }
+    .fw-bold { font-weight: 700; }
+
+    /* Grid Layouts */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .stat-box {
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .stat-box .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .stat-box .val {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 8px 0;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      border-radius: var(--radius-pill);
+      transition: width 0.3s ease;
+    }
+    .progress-bar.danger { background: var(--danger); }
+
+    /* Split Bar for Day/Night */
+    .split-bar-wrap {
+      height: 12px;
+      width: 100%;
+      display: flex;
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 8px 0;
+      background: var(--bg-card-alt);
+    }
+    .split-day { background-color: #f59e0b; transition: width 0.3s ease; }
+    .split-night { background-color: #6366f1; transition: width 0.3s ease; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      min-height: 44px;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--text-on-primary);
+    }
+    .btn-primary:active { background-color: var(--primary-hover); transform: scale(0.99); }
+    .btn-outline {
+      border-color: var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+    }
+    .btn-outline:active { background-color: var(--bg-card-alt); }
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    .btn-danger-outline {
+      background: transparent;
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      min-height: 44px;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Radio Choice Segment Control */
+    .period-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--bg-card-alt);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+    .period-btn {
+      padding: 10px;
+      text-align: center;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .period-btn.active {
+      background: var(--bg-card);
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Expense Item List */
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .expense-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: transform 0.15s ease;
+    }
+    .expense-item:hover {
+      transform: translateY(-1px);
+    }
+    .expense-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .expense-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: var(--bg-card-alt);
+      flex-shrink: 0;
+    }
+    .expense-details {
+      min-width: 0;
+    }
+    .expense-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .expense-meta {
+      font-size: 0.775rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .expense-right {
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .expense-amount {
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .expense-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      justify-content: flex-end;
+    }
+    .action-icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .action-icon-btn:hover { color: var(--text-main); background: var(--bg-card-alt); }
+    .action-icon-btn.delete:hover { color: var(--danger); }
+
+    /* Bar Charts */
+    .chart-container {
+      display: flex;
+      align-items: flex-end;
+      height: 160px;
+      gap: 8px;
+      padding-top: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+    }
+    .chart-bar {
+      width: 100%;
+      max-width: 24px;
+      background-color: var(--primary);
+      border-radius: 4px 4px 0 0;
+      min-height: 2px;
+      transition: height 0.4s ease;
+      position: relative;
+    }
+    .chart-bar-val {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      font-weight: bold;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .chart-label {
+      font-size: 0.7rem;
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Category breakdown list */
+    .category-row {
+      margin-bottom: 10px;
+    }
+    .category-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+    }
+    .category-fill-track {
+      height: 6px;
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .category-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: var(--radius-pill);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-height);
+      background-color: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.725rem;
+      font-weight: 600;
+      padding: 6px 0;
+      flex: 1;
+      gap: 4px;
+      transition: color 0.15s ease;
+    }
+    .nav-tab svg { width: 20px; height: 20px; fill: currentColor; }
+    .nav-tab.active { color: var(--primary); }
+
+    /* Views */
+    .view-section { display: none; }
+    .view-section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: calc(var(--nav-height) + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+      width: calc(100% - 32px);
+      max-width: 400px;
+    }
+    .toast {
+      background: var(--text-main);
+      color: var(--bg-card);
+      padding: 10px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: toastIn 0.25s forwards;
+    }
+    @keyframes toastIn {
+      to { opacity: 0.95; transform: translateY(0); }
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .modal-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Empty States */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+    }
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+
+    /* Filter Controls in History */
+    .filter-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .filter-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 6px 12px;
+      background: var(--bg-card-alt);
+      border-radius: var(--radius-pill);
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+    }
+    .chip.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Desktop/Tablet responsiveness */
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 24px;
+        padding-top: 0;
+      }
+      header.sticky-header {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        border-radius: 0 0 var(--radius-md) var(--radius-md);
+        border: 1px solid var(--border);
+      }
+      .bottom-nav {
+        top: 0;
+        bottom: auto;
+        position: static;
+        width: 100%;
+        max-width: var(--max-width);
+        margin: 0 auto 16px auto;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+      }
+      .app-layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .full-span {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* PWA / Offline UI */
+    .offline-banner{display:none;position:sticky;top:56px;z-index:35;background:#f59e0b;color:#111827;padding:7px 12px;text-align:center;font-size:.78rem;font-weight:700}
+    .offline-banner.show{display:block}
+    .pwa-install-card{border:1px solid var(--primary);background:var(--primary-light)}
+    .pwa-status{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-muted);margin:8px 0 12px}
+    .status-dot{width:9px;height:9px;border-radius:50%;background:var(--success);flex:none}
+    .status-dot.offline{background:var(--warning)}
+    .install-btn{display:none}
+    .install-btn.show{display:inline-flex}
+    .small-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(max-width:420px){.small-actions{grid-template-columns:1fr}.offline-banner{top:56px}}
+  </style>
+</head>
+<body>
+
+  <header class="sticky-header">
+    <div class="brand-title">
+      <span>🎓</span> Student Expense Tracker
+    </div>
+    <button class="header-quick-add" id="header-add-btn" aria-label="Add Expense" title="Quick Add">＋</button>
+  </header>
+  <div id="offline-banner" class="offline-banner">Offline mode — your saved data and app are still available.</div>
+
+  <div class="app-container">
+    
+    <nav class="bottom-nav" aria-label="Main Navigation">
+      <button class="nav-tab active" data-target="home-view">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-tab" data-target="add-view">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Add Entry</span>
+      </button>
+      <button class="nav-tab" data-target="history-view">
+        <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        <span>History</span>
+      </button>
+      <button class="nav-tab" data-target="settings-view">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Settings</span>
+      </button>
+    </nav>
+
+    <main id="home-view" class="view-section active">
+      <div class="app-layout-grid">
+        <div class="card full-span">
+          <div class="card-title">Spending Overview</div>
+          <div class="grid-3">
+            <div class="stat-box">
+              <span class="label">TODAY</span>
+              <span class="val" id="dash-today">₹0</span>
+            </div>
+            <div class="stat-box">
+              <span class="label">THIS WEEK</span>
+              <span class="val" id="dash-week">₹0</span>
+            </div>
+            <div class="stat-box">
+              <span class="label">THIS MONTH</span>
+              <span class="val" id="dash-month">₹0</span>
+            </div>
+          </div>
+          
+          <div class="grid-3" style="margin-top: 10px;">
+            <div class="stat-box">
+              <span class="label">Total Entries</span>
+              <span class="val text-sm" id="dash-entries-count">0</span>
+            </div>
+            <div class="stat-box">
+              <span class="label">Daily Average</span>
+              <span class="val text-sm" id="dash-avg-daily">₹0</span>
+            </div>
+            <div class="stat-box">
+              <span class="label">Highest Expense</span>
+              <span class="val text-sm" id="dash-max-expense">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="budget-card">
+          <div class="card-title">Monthly Budget Status</div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span class="text-sm text-muted">Budget: <strong id="budget-target-val">₹0</strong></span>
+            <span class="text-sm" id="budget-remaining-desc">Remaining: <strong>₹0</strong></span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="budget-progress-bar" style="width: 0%;"></div>
+          </div>
+          <div class="text-xs text-muted" id="budget-status-msg">Set up budget limits in Settings</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Day vs Night Analysis</div>
+          <div style="display: flex; justify-content: space-between; align-items: baseline;">
+            <span class="text-sm">☀ Day: <strong id="day-spending-val">₹0</strong> (<span id="day-pct">0%</span>)</span>
+            <span class="text-sm">🌙 Night: <strong id="night-spending-val">₹0</strong> (<span id="night-pct">0%</span>)</span>
+          </div>
+          <div class="split-bar-wrap">
+            <div class="split-day" id="split-day-bar" style="width: 50%;"></div>
+            <div class="split-night" id="split-night-bar" style="width: 50%;"></div>
+          </div>
+          <div class="text-xs text-muted">Calculated from all records</div>
+        </div>
+
+        <div class="card full-span">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-title" style="margin-bottom: 0;">Weekly Activity (Mon - Sun)</div>
+            <span class="text-xs text-muted" id="chart-week-range">Current Week</span>
+          </div>
+          <div class="chart-container" id="weekly-chart">
+            </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Category Breakdown</div>
+          <div id="category-breakdown-list">
+            </div>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div class="card-title" style="margin-bottom: 0;">Recent Expenses</div>
+            <button class="btn-outline text-xs" id="home-view-all-btn" style="width: auto; min-height: 28px; padding: 4px 10px; border-radius: 4px;">View All</button>
+          </div>
+          <div id="recent-expenses-list" class="expense-list">
+            </div>
+        </div>
+      </div>
+    </main>
+
+    <main id="add-view" class="view-section">
+      <div class="card">
+        <h2 id="form-header-title" style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px;">Add New Expense</h2>
+        
+        <form id="expense-form" novalidate>
+          <input type="hidden" id="entry-id" value="">
+
+          <div class="form-group">
+            <label class="form-label" for="entry-name">Item Name *</label>
+            <input type="text" id="entry-name" class="form-input" placeholder="e.g. Lunch, Books, Bus fare" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="entry-price">Price (₹) *</label>
+            <input type="number" id="entry-price" class="form-input" placeholder="0.00" step="any" min="0.01" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Day / Night *</label>
+            <div class="period-selector">
+              <button type="button" class="period-btn active" data-period="day">
+                ☀ Day
+              </button>
+              <button type="button" class="period-btn" data-period="night">
+                🌙 Night
+              </button>
+            </div>
+            <input type="hidden" id="entry-period" value="day">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="entry-date">Date *</label>
+              <input type="date" id="entry-date" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="entry-time">Time *</label>
+              <input type="time" id="entry-time" class="form-input" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="entry-category">Category *</label>
+            <select id="entry-category" class="form-select" required>
+              <option value="Food">Food</option>
+              <option value="Travel">Travel</option>
+              <option value="Education">Education</option>
+              <option value="Mobile/Internet">Mobile/Internet</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Health">Health</option>
+              <option value="Hostel/Room">Hostel/Room</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="entry-note">Note (Optional)</label>
+            <textarea id="entry-note" class="form-textarea" rows="2" placeholder="Add additional details..."></textarea>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline" id="btn-cancel-edit" style="display: none;">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-expense">Save Expense</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <main id="history-view" class="view-section">
+      <div class="card">
+        <div class="filter-wrapper">
+          <input type="text" id="history-search" class="form-input" placeholder="🔍 Search item, category, or note...">
+          
+          <div class="filter-scroll" id="period-chips">
+            <button class="chip active" data-filter="all">All</button>
+            <button class="chip" data-filter="today">Today</button>
+            <button class="chip" data-filter="yesterday">Yesterday</button>
+            <button class="chip" data-filter="this-week">This Week</button>
+            <button class="chip" data-filter="this-month">This Month</button>
+            <button class="chip" data-filter="day-only">☀ Day</button>
+            <button class="chip" data-filter="night-only">🌙 Night</button>
+          </div>
+
+          <div class="grid-2">
+            <select id="history-category-filter" class="form-select">
+              <option value="">All Categories</option>
+              <option value="Food">Food</option>
+              <option value="Travel">Travel</option>
+              <option value="Education">Education</option>
+              <option value="Mobile/Internet">Mobile/Internet</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Health">Health</option>
+              <option value="Hostel/Room">Hostel/Room</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Other">Other</option>
+            </select>
+
+            <select id="history-sort-select" class="form-select">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="amount-desc">Highest Amount</option>
+              <option value="amount-asc">Lowest Amount</option>
+              <option value="name-asc">Item Name (A-Z)</option>
+            </select>
+          </div>
+
+          <div id="custom-range-container" class="grid-2" style="display: none;">
+            <input type="date" id="history-from-date" class="form-input" aria-label="From Date">
+            <input type="date" id="history-to-date" class="form-input" aria-label="To Date">
+          </div>
+        </div>
+
+        <div style="background: var(--bg-card-alt); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <span class="text-xs text-muted" id="filter-count-badge">0 entries</span>
+          <span class="text-sm fw-bold" id="filter-total-badge">Total: ₹0</span>
+        </div>
+
+        <div id="history-expenses-list" class="expense-list">
+          </div>
+      </div>
+    </main>
+
+    <main id="settings-view" class="view-section">
+      <div class="card">
+        <div class="card-title">General Preferences</div>
+        <div class="form-group">
+          <label class="form-label" for="setting-default-period">Default Day/Night Period</label>
+          <select id="setting-default-period" class="form-select">
+            <option value="day">☀ Day</option>
+            <option value="night">🌙 Night</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="setting-default-cat">Default Category</label>
+          <select id="setting-default-cat" class="form-select">
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Education">Education</option>
+            <option value="Mobile/Internet">Mobile/Internet</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Health">Health</option>
+            <option value="Hostel/Room">Hostel/Room</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Budget Configuration</div>
+        <div class="form-group">
+          <label class="form-label" for="budget-daily">Daily Budget Target (₹)</label>
+          <input type="number" id="budget-daily" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="budget-weekly">Weekly Budget Target (₹)</label>
+          <input type="number" id="budget-weekly" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="budget-monthly">Monthly Budget Target (₹)</label>
+          <input type="number" id="budget-monthly" class="form-input" placeholder="0">
+        </div>
+        <button class="btn btn-primary" id="btn-save-budget">Save Budget Settings</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Appearance</div>
+        <div class="form-group">
+          <label class="form-label" for="setting-theme">Theme Mode</label>
+          <select id="setting-theme" class="form-select">
+            <option value="system">System Default</option>
+            <option value="light">Light Mode</option>
+            <option value="dark">Dark Mode</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card pwa-install-card">
+        <div class="card-title">App & Offline Mode</div>
+        <div class="pwa-status"><span id="pwa-status-dot" class="status-dot"></span><span id="pwa-status-text">Checking app status…</span></div>
+        <div class="small-actions">
+          <button class="btn btn-primary install-btn" id="btn-install-app">Install App</button>
+          <button class="btn btn-outline" id="btn-update-app">Check for Update</button>
+        </div>
+        <p class="text-xs text-muted" style="margin-top:10px;">Install from Chrome to use this tracker like an app. After the first successful online load, the app shell is cached for offline use.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Backup & Restore</div>
+        <p class="text-sm text-muted" style="margin-bottom: 12px;">Export or restore your personal expense data.</p>
+        <div class="grid-2" style="margin-bottom: 8px;">
+          <button class="btn btn-outline" id="btn-export-json">Export JSON</button>
+          <button class="btn btn-outline" id="btn-export-csv">Export CSV</button>
+        </div>
+        <input type="file" id="import-json-file" accept=".json" style="display: none;">
+        <button class="btn btn-outline" id="btn-trigger-import" style="margin-bottom: 8px;">Import JSON File</button>
+        <button class="btn btn-outline" id="btn-load-demo">Load Demo Test Data</button>
+      </div>
+
+      <div class="card" style="border-color: var(--danger-light);">
+        <div class="card-title text-danger">Reset & Danger Zone</div>
+        <p class="text-xs text-muted" style="margin-bottom: 12px;">This action will permanently delete all records saved on this browser.</p>
+        <button class="btn btn-danger-outline" id="btn-clear-all">Delete All Expenses</button>
+      </div>
+
+      <div class="card text-center" style="background: transparent; border: none; box-shadow: none;">
+        <div style="font-weight: 700;">Student Daily Expense Tracker</div>
+        <div class="text-xs text-muted">Version 1.0.0</div>
+        <div class="text-xs text-muted" style="margin-top: 4px;">Your data is completely private and stored locally in this browser.</div>
+      </div>
+    </main>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <div class="modal-backdrop" id="custom-modal">
+    <div class="modal-content">
+      <h3 class="modal-title" id="modal-title">Confirmation</h3>
+      <p class="modal-desc" id="modal-desc">Are you sure you want to proceed?</p>
+      <div class="btn-group">
+        <button class="btn btn-outline" id="modal-btn-cancel">Cancel</button>
+        <button class="btn btn-danger" id="modal-btn-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       STORAGE & STATE MANAGEMENT
+       ========================================================================== */
+    const STORAGE_KEY = 'student_expense_tracker_data_v1';
+    
+    let appState = {
+      expenses: [],
+      settings: {
+        dailyBudget: 300,
+        weeklyBudget: 2000,
+        monthlyBudget: 8000,
+        currency: 'INR',
+        theme: 'system',
+        defaultPeriod: 'day',
+        defaultCategory: 'Food'
+      }
+    };
+
+    let activeFilter = 'all';
+
+    // Safe local storage load
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.expenses)) {
+            appState.expenses = parsed.expenses;
+          }
+          if (parsed && parsed.settings) {
+            appState.settings = { ...appState.settings, ...parsed.settings };
+          }
+        }
+      } catch (err) {
+        console.error('Storage access error:', err);
+        showToast('Local storage unavailable. Running in session mode.');
+      }
+    }
+
+    // Safe save
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (err) {
+        console.error('Failed to save state:', err);
+        showToast('Error saving data to local storage.');
+      }
+    }
+
+    /* ==========================================================================
+       UTILITIES & FORMATTERS
+       ========================================================================== */
+    const currencyFormatter = new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 2
+    });
+
+    function formatCurrency(val) {
+      const num = Number(val) || 0;
+      return currencyFormatter.format(num);
+    }
+
+    function getFormattedDate(d = new Date()) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function getFormattedTime(d = new Date()) {
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${hours}:${mins}`;
+    }
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"']/g, function (m) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+      });
+    }
+
+    /* ==========================================================================
+       TOAST NOTIFICATIONS & CONFIRMATION MODAL
+       ========================================================================== */
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    let modalConfirmCallback = null;
+
+    function showConfirmModal(title, message, confirmText = 'Confirm', onConfirm, isDanger = true) {
+      const modal = document.getElementById('custom-modal');
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-desc').textContent = message;
+      
+      const confirmBtn = document.getElementById('modal-btn-confirm');
+      confirmBtn.textContent = confirmText;
+      if (isDanger) {
+        confirmBtn.className = 'btn btn-danger';
+      } else {
+        confirmBtn.className = 'btn btn-primary';
+      }
+
+      modalConfirmCallback = onConfirm;
+      modal.classList.add('show');
+    }
+
+    function hideConfirmModal() {
+      const modal = document.getElementById('custom-modal');
+      modal.classList.remove('show');
+      modalConfirmCallback = null;
+    }
+
+    document.getElementById('modal-btn-cancel').addEventListener('click', hideConfirmModal);
+    document.getElementById('modal-btn-confirm').addEventListener('click', () => {
+      if (modalConfirmCallback) modalConfirmCallback();
+      hideConfirmModal();
+    });
+
+    /* ==========================================================================
+       THEME CONTROLS
+       ========================================================================== */
+    function applyTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'system') {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      } else {
+        root.setAttribute('data-theme', theme);
+      }
+    }
+
+    /* ==========================================================================
+       DATE HELPERS (Mon-Sun Weekly Logic)
+       ========================================================================== */
+    function getStartOfWeek(date) {
+      const d = new Date(date);
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when Sunday
+      d.setDate(diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function getEndOfWeek(date) {
+      const start = getStartOfWeek(date);
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      end.setHours(23, 59, 59, 999);
+      return end;
+    }
+
+    function isSameDate(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
+
+    /* ==========================================================================
+       CALCULATIONS
+       ========================================================================== */
+    function calculateDashboardMetrics() {
+      const now = new Date();
+      const todayStr = getFormattedDate(now);
+      const startOfWeek = getStartOfWeek(now);
+      const endOfWeek = getEndOfWeek(now);
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      let todayTotal = 0;
+      let weekTotal = 0;
+      let monthTotal = 0;
+      let maxExpense = 0;
+      let daySpending = 0;
+      let nightSpending = 0;
+
+      const dateTotals = {};
+
+      appState.expenses.forEach(exp => {
+        const expDate = new Date(exp.date + 'T' + (exp.time || '00:00'));
+        const price = Number(exp.price) || 0;
+
+        if (price > maxExpense) {
+          maxExpense = price;
+        }
+
+        // Today
+        if (exp.date === todayStr) {
+          todayTotal += price;
+        }
+
+        // Weekly (Mon - Sun)
+        if (expDate >= startOfWeek && expDate <= endOfWeek) {
+          weekTotal += price;
+        }
+
+        // Monthly
+        if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
+          monthTotal += price;
+          dateTotals[exp.date] = (dateTotals[exp.date] || 0) + price;
+        }
+
+        // Day vs Night
+        if (exp.period === 'night') {
+          nightSpending += price;
+        } else {
+          daySpending += price;
+        }
+      });
+
+      // Average daily calculation (based on active tracked days this month or days elapsed)
+      const dayOfMonth = now.getDate();
+      const avgDaily = dayOfMonth > 0 ? (monthTotal / dayOfMonth) : 0;
+
+      return {
+        todayTotal,
+        weekTotal,
+        monthTotal,
+        totalEntries: appState.expenses.length,
+        avgDaily,
+        maxExpense,
+        daySpending,
+        nightSpending
+      };
+    }
+
+    function getCategoryTotals() {
+      const totals = {};
+      appState.expenses.forEach(exp => {
+        const cat = exp.category || 'Other';
+        totals[cat] = (totals[cat] || 0) + Number(exp.price || 0);
+      });
+      return totals;
+    }
+
+    function getWeeklyDaysBreakdown() {
+      const now = new Date();
+      const startOfWeek = getStartOfWeek(now);
+      const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+
+      appState.expenses.forEach(exp => {
+        const expDate = new Date(exp.date + 'T12:00:00');
+        const diffTime = expDate - startOfWeek;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays >= 0 && diffDays < 7) {
+          dayTotals[diffDays] += Number(exp.price || 0);
+        }
+      });
+
+      return { days, totals: dayTotals };
+    }
+
+    /* ==========================================================================
+       EXPENSE CRUD OPERATIONS
+       ========================================================================== */
+    function addExpense(expense) {
+      appState.expenses.unshift(expense);
+      saveData();
+      refreshAllViews();
+    }
+
+    function updateExpense(id, updatedFields) {
+      const index = appState.expenses.findIndex(e => e.id === id);
+      if (index !== -1) {
+        appState.expenses[index] = { ...appState.expenses[index], ...updatedFields };
+        saveData();
+        refreshAllViews();
+      }
+    }
+
+    function deleteExpense(id) {
+      appState.expenses = appState.expenses.filter(e => e.id !== id);
+      saveData();
+      refreshAllViews();
+    }
+
+    function getExpenseById(id) {
+      return appState.expenses.find(e => e.id === id);
+    }
+
+    /* ==========================================================================
+       RENDERING LOGIC
+       ========================================================================== */
+    function renderDashboard() {
+      const metrics = calculateDashboardMetrics();
+
+      document.getElementById('dash-today').textContent = formatCurrency(metrics.todayTotal);
+      document.getElementById('dash-week').textContent = formatCurrency(metrics.weekTotal);
+      document.getElementById('dash-month').textContent = formatCurrency(metrics.monthTotal);
+      document.getElementById('dash-entries-count').textContent = metrics.totalEntries;
+      document.getElementById('dash-avg-daily').textContent = formatCurrency(metrics.avgDaily);
+      document.getElementById('dash-max-expense').textContent = formatCurrency(metrics.maxExpense);
+
+      // Day vs Night split
+      const totalDN = metrics.daySpending + metrics.nightSpending;
+      let dayPct = 50;
+      let nightPct = 50;
+      if (totalDN > 0) {
+        dayPct = Math.round((metrics.daySpending / totalDN) * 100);
+        nightPct = 100 - dayPct;
+      }
+      document.getElementById('day-spending-val').textContent = formatCurrency(metrics.daySpending);
+      document.getElementById('night-spending-val').textContent = formatCurrency(metrics.nightSpending);
+      document.getElementById('day-pct').textContent = `${dayPct}%`;
+      document.getElementById('night-pct').textContent = `${nightPct}%`;
+      document.getElementById('split-day-bar').style.width = `${dayPct}%`;
+      document.getElementById('split-night-bar').style.width = `${nightPct}%`;
+
+      // Budget status
+      const monthlyBudget = Number(appState.settings.monthlyBudget) || 0;
+      document.getElementById('budget-target-val').textContent = formatCurrency(monthlyBudget);
+      const budgetProgress = document.getElementById('budget-progress-bar');
+      const budgetMsg = document.getElementById('budget-status-msg');
+      const budgetRemainingDesc = document.getElementById('budget-remaining-desc');
+
+      if (monthlyBudget > 0) {
+        const remaining = monthlyBudget - metrics.monthTotal;
+        const pct = Math.min(100, Math.round((metrics.monthTotal / monthlyBudget) * 100));
+        budgetProgress.style.width = `${pct}%`;
+
+        if (remaining >= 0) {
+          budgetRemainingDesc.innerHTML = `Remaining: <strong>${formatCurrency(remaining)}</strong>`;
+          budgetProgress.classList.remove('danger');
+          budgetMsg.textContent = `${pct}% of monthly budget spent`;
+          budgetMsg.classList.remove('text-danger');
+        } else {
+          budgetRemainingDesc.innerHTML = `<span class="text-danger">Exceeded: <strong>${formatCurrency(Math.abs(remaining))}</strong></span>`;
+          budgetProgress.classList.add('danger');
+          budgetMsg.textContent = `Budget exceeded by ${formatCurrency(Math.abs(remaining))}!`;
+          budgetMsg.classList.add('text-danger');
+        }
+      } else {
+        budgetProgress.style.width = '0%';
+        budgetRemainingDesc.innerHTML = `Remaining: <strong>₹0</strong>`;
+        budgetMsg.textContent = 'Set your monthly budget in settings';
+        budgetMsg.classList.remove('text-danger');
+      }
+
+      renderWeeklyChart();
+      renderCategoryAnalysis();
+      renderRecentExpenses();
+    }
+
+    function renderWeeklyChart() {
+      const { days, totals } = getWeeklyDaysBreakdown();
+      const container = document.getElementById('weekly-chart');
+      container.innerHTML = '';
+
+      const maxVal = Math.max(...totals, 100);
+
+      days.forEach((day, idx) => {
+        const val = totals[idx];
+        const heightPct = Math.max(4, Math.round((val / maxVal) * 100));
+
+        const col = document.createElement('div');
+        col.className = 'chart-col';
+        col.innerHTML = `
+          <div class="chart-bar" style="height: ${heightPct}%;">
+            ${val > 0 ? `<div class="chart-bar-val">₹${Math.round(val)}</div>` : ''}
+          </div>
+          <div class="chart-label">${day}</div>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    function renderCategoryAnalysis() {
+      const container = document.getElementById('category-breakdown-list');
+      container.innerHTML = '';
+
+      const catTotals = getCategoryTotals();
+      const totalAll = Object.values(catTotals).reduce((a, b) => a + b, 0);
+      const sortedKeys = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
+
+      if (sortedKeys.length === 0) {
+        container.innerHTML = '<div class="text-xs text-muted">No category data available yet.</div>';
+        return;
+      }
+
+      sortedKeys.forEach(cat => {
+        const val = catTotals[cat];
+        const pct = totalAll > 0 ? Math.round((val / totalAll) * 100) : 0;
+
+        const row = document.createElement('div');
+        row.className = 'category-row';
+        row.innerHTML = `
+          <div class="category-meta">
+            <span>${escapeHtml(cat)}</span>
+            <span><strong>${formatCurrency(val)}</strong> <span class="text-xs text-muted">(${pct}%)</span></span>
+          </div>
+          <div class="category-fill-track">
+            <div class="category-fill" style="width: ${pct}%;"></div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function renderRecentExpenses() {
+      const container = document.getElementById('recent-expenses-list');
+      container.innerHTML = '';
+
+      const recent = appState.expenses.slice(0, 5);
+
+      if (recent.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">💸</div>
+            <p class="text-sm fw-bold">Your expense list is empty.</p>
+            <p class="text-xs text-muted" style="margin-bottom: 12px;">Start tracking by adding your first daily spending.</p>
+            <button class="btn btn-primary text-xs" style="width: auto; margin: 0 auto;" onclick="navigateToTab('add-view')">Add Expense</button>
+          </div>
+        `;
+        return;
+      }
+
+      recent.forEach(exp => {
+        container.appendChild(createExpenseItemElement(exp));
+      });
+    }
+
+    function createExpenseItemElement(exp) {
+      const item = document.createElement('div');
+      item.className = 'expense-item';
+      
+      const isNight = exp.period === 'night';
+      const icon = isNight ? '🌙' : '☀';
+
+      const dateObj = new Date(exp.date + 'T' + (exp.time || '00:00'));
+      const dateFormatted = isNaN(dateObj) ? exp.date : dateObj.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+
+      item.innerHTML = `
+        <div class="expense-left">
+          <div class="expense-badge">${icon}</div>
+          <div class="expense-details">
+            <div class="expense-title">${escapeHtml(exp.item)}</div>
+            <div class="expense-meta">
+              <span>${dateFormatted}</span>
+              <span>•</span>
+              <span>${escapeHtml(exp.time || '')}</span>
+              <span>•</span>
+              <span>${escapeHtml(exp.category || 'General')}</span>
+            </div>
+            ${exp.note ? `<div class="text-xs text-muted" style="margin-top: 2px;">${escapeHtml(exp.note)}</div>` : ''}
+          </div>
+        </div>
+        <div class="expense-right">
+          <div class="expense-amount">${formatCurrency(exp.price)}</div>
+          <div class="expense-actions">
+            <button class="action-icon-btn edit-btn" title="Edit" aria-label="Edit expense">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            </button>
+            <button class="action-icon-btn delete delete-btn" title="Delete" aria-label="Delete expense">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+
+      item.querySelector('.edit-btn').addEventListener('click', () => editExpenseHandler(exp.id));
+      item.querySelector('.delete-btn').addEventListener('click', () => {
+        showConfirmModal(
+          'Delete Expense',
+          `Are you sure you want to delete "${exp.item}" (${formatCurrency(exp.price)})?`,
+          'Delete',
+          () => {
+            deleteExpense(exp.id);
+            showToast('Expense deleted');
+          },
+          true
+        );
+      });
+
+      return item;
+    }
+
+    /* ==========================================================================
+       HISTORY PAGE SEARCH & FILTERING
+       ========================================================================== */
+    function getFilteredHistoryExpenses() {
+      const searchVal = document.getElementById('history-search').value.trim().toLowerCase();
+      const catVal = document.getElementById('history-category-filter').value;
+      const sortVal = document.getElementById('history-sort-select').value;
+      const fromDate = document.getElementById('history-from-date').value;
+      const toDate = document.getElementById('history-to-date').value;
+
+      const now = new Date();
+      const todayStr = getFormattedDate(now);
+      
+      const yesterdayObj = new Date(now);
+      yesterdayObj.setDate(now.getDate() - 1);
+      const yesterdayStr = getFormattedDate(yesterdayObj);
+
+      const startOfWeek = getStartOfWeek(now);
+      const endOfWeek = getEndOfWeek(now);
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
+      return appState.expenses.filter(exp => {
+        // Search filter
+        if (searchVal) {
+          const matchItem = exp.item && exp.item.toLowerCase().includes(searchVal);
+          const matchCat = exp.category && exp.category.toLowerCase().includes(searchVal);
+          const matchNote = exp.note && exp.note.toLowerCase().includes(searchVal);
+          if (!matchItem && !matchCat && !matchNote) return false;
+        }
+
+        // Category filter
+        if (catVal && exp.category !== catVal) {
+          return false;
+        }
+
+        // Period filter chip
+        const expDate = new Date(exp.date + 'T' + (exp.time || '00:00'));
+
+        if (activeFilter === 'today' && exp.date !== todayStr) return false;
+        if (activeFilter === 'yesterday' && exp.date !== yesterdayStr) return false;
+        if (activeFilter === 'this-week') {
+          if (expDate < startOfWeek || expDate > endOfWeek) return false;
+        }
+        if (activeFilter === 'this-month') {
+          if (expDate.getMonth() !== currentMonth || expDate.getFullYear() !== currentYear) return false;
+        }
+        if (activeFilter === 'day-only' && exp.period !== 'day') return false;
+        if (activeFilter === 'night-only' && exp.period !== 'night') return false;
+        if (activeFilter === 'custom') {
+          if (fromDate && exp.date < fromDate) return false;
+          if (toDate && exp.date > toDate) return false;
+        }
+
+        return true;
+      }).sort((a, b) => {
+        if (sortVal === 'date-desc') {
+          return new Date(b.date + 'T' + (b.time || '00:00')) - new Date(a.date + 'T' + (a.time || '00:00'));
+        }
+        if (sortVal === 'date-asc') {
+          return new Date(a.date + 'T' + (a.time || '00:00')) - new Date(b.date + 'T' + (b.time || '00:00'));
+        }
+        if (sortVal === 'amount-desc') return b.price - a.price;
+        if (sortVal === 'amount-asc') return a.price - b.price;
+        if (sortVal === 'name-asc') return a.item.localeCompare(b.item);
+        return 0;
+      });
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-expenses-list');
+      container.innerHTML = '';
+
+      const filtered = getFilteredHistoryExpenses();
+      const totalSum = filtered.reduce((acc, curr) => acc + Number(curr.price || 0), 0);
+
+      document.getElementById('filter-count-badge').textContent = `${filtered.length} entries`;
+      document.getElementById('filter-total-badge').textContent = `Total: ${formatCurrency(totalSum)}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p class="text-sm fw-bold">No matching expenses found</p>
+            <p class="text-xs text-muted">Try resetting search filters or keywords.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(exp => {
+        container.appendChild(createExpenseItemElement(exp));
+      });
+    }
+
+    /* ==========================================================================
+       FORM HANDLING (ADD / EDIT)
+       ========================================================================== */
+    function resetEntryForm() {
+      const form = document.getElementById('expense-form');
+      form.reset();
+      document.getElementById('entry-id').value = '';
+      document.getElementById('form-header-title').textContent = 'Add New Expense';
+      document.getElementById('btn-save-expense').textContent = 'Save Expense';
+      document.getElementById('btn-cancel-edit').style.display = 'none';
+
+      const now = new Date();
+      document.getElementById('entry-date').value = getFormattedDate(now);
+      document.getElementById('entry-time').value = getFormattedTime(now);
+
+      const defaultPer = appState.settings.defaultPeriod || 'day';
+      setPeriodRadio(defaultPer);
+
+      document.getElementById('entry-category').value = appState.settings.defaultCategory || 'Food';
+    }
+
+    function setPeriodRadio(val) {
+      document.getElementById('entry-period').value = val;
+      document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.period === val);
+      });
+    }
+
+    function editExpenseHandler(id) {
+      const exp = getExpenseById(id);
+      if (!exp) return;
+
+      document.getElementById('entry-id').value = exp.id;
+      document.getElementById('entry-name').value = exp.item;
+      document.getElementById('entry-price').value = exp.price;
+      document.getElementById('entry-date').value = exp.date;
+      document.getElementById('entry-time').value = exp.time || '12:00';
+      document.getElementById('entry-category').value = exp.category || 'Food';
+      document.getElementById('entry-note').value = exp.note || '';
+
+      setPeriodRadio(exp.period || 'day');
+
+      document.getElementById('form-header-title').textContent = 'Edit Expense';
+      document.getElementById('btn-save-expense').textContent = 'Update Expense';
+      document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+
+      navigateToTab('add-view');
+    }
+
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setPeriodRadio(btn.dataset.period);
+      });
+    });
+
+    document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+      resetEntryForm();
+      navigateToTab('history-view');
+    });
+
+    document.getElementById('expense-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('entry-id').value;
+      const item = document.getElementById('entry-name').value.trim();
+      const price = parseFloat(document.getElementById('entry-price').value);
+      const period = document.getElementById('entry-period').value;
+      const date = document.getElementById('entry-date').value;
+      const time = document.getElementById('entry-time').value;
+      const category = document.getElementById('entry-category').value;
+      const note = document.getElementById('entry-note').value.trim();
+
+      // Form validation
+      if (!item) {
+        showToast('Please enter an item name');
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        showToast('Please enter a valid price greater than 0');
+        return;
+      }
+      if (price > 10000000) {
+        showToast('Price amount exceeds allowed maximum');
+        return;
+      }
+      if (!date) {
+        showToast('Please select a valid date');
+        return;
+      }
+
+      if (id) {
+        updateExpense(id, { item, price, period, date, time, category, note });
+        showToast('Expense updated');
+        resetEntryForm();
+        navigateToTab('history-view');
+      } else {
+        const newExpense = {
+          id: generateId(),
+          item,
+          price,
+          period,
+          date,
+          time,
+          category,
+          note,
+          createdAt: new Date().toISOString()
+        };
+        addExpense(newExpense);
+        showToast('Expense saved successfully');
+        resetEntryForm();
+        navigateToTab('home-view');
+      }
+    });
+
+    /* ==========================================================================
+       SETTINGS & BUDGET MANAGEMENT
+       ========================================================================== */
+    function loadSettingsUI() {
+      document.getElementById('budget-daily').value = appState.settings.dailyBudget || '';
+      document.getElementById('budget-weekly').value = appState.settings.weeklyBudget || '';
+      document.getElementById('budget-monthly').value = appState.settings.monthlyBudget || '';
+      document.getElementById('setting-theme').value = appState.settings.theme || 'system';
+      document.getElementById('setting-default-period').value = appState.settings.defaultPeriod || 'day';
+      document.getElementById('setting-default-cat').value = appState.settings.defaultCategory || 'Food';
+    }
+
+    document.getElementById('btn-save-budget').addEventListener('click', () => {
+      const daily = parseFloat(document.getElementById('budget-daily').value) || 0;
+      const weekly = parseFloat(document.getElementById('budget-weekly').value) || 0;
+      const monthly = parseFloat(document.getElementById('budget-monthly').value) || 0;
+
+      appState.settings.dailyBudget = Math.max(0, daily);
+      appState.settings.weeklyBudget = Math.max(0, weekly);
+      appState.settings.monthlyBudget = Math.max(0, monthly);
+
+      saveData();
+      refreshAllViews();
+      showToast('Budget settings updated');
+    });
+
+    document.getElementById('setting-theme').addEventListener('change', (e) => {
+      const val = e.target.value;
+      appState.settings.theme = val;
+      applyTheme(val);
+      saveData();
+      showToast(`Theme updated to ${val}`);
+    });
+
+    document.getElementById('setting-default-period').addEventListener('change', (e) => {
+      appState.settings.defaultPeriod = e.target.value;
+      saveData();
+      showToast('Default day/night period saved');
+    });
+
+    document.getElementById('setting-default-cat').addEventListener('change', (e) => {
+      appState.settings.defaultCategory = e.target.value;
+      saveData();
+      showToast('Default category saved');
+    });
+
+    /* ==========================================================================
+       IMPORT / EXPORT / BACKUP
+       ========================================================================== */
+    document.getElementById('btn-export-json').addEventListener('click', () => {
+      const nowStr = getFormattedDate(new Date());
+      const backupData = {
+        app: 'Student Daily Expense Tracker',
+        version: '1.0.0',
+        exportDate: new Date().toISOString(),
+        settings: appState.settings,
+        expenses: appState.expenses
+      };
+
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `student-expenses-${nowStr}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Backup exported as JSON');
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', () => {
+      const nowStr = getFormattedDate(new Date());
+      let csvContent = 'data:text/csv;charset=utf-8,';
+      csvContent += 'ID,Item,Price,Period,Date,Time,Category,Note\r\n';
+
+      appState.expenses.forEach(e => {
+        const row = [
+          e.id,
+          `"${(e.item || '').replace(/"/g, '""')}"`,
+          e.price,
+          e.period,
+          e.date,
+          e.time,
+          `"${(e.category || '').replace(/"/g, '""')}"`,
+          `"${(e.note || '').replace(/"/g, '""')}"`
+        ];
+        csvContent += row.join(',') + '\r\n';
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `student-expenses-${nowStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      showToast('Exported CSV successfully');
+    });
+
+    document.getElementById('btn-trigger-import').addEventListener('click', () => {
+      document.getElementById('import-json-file').click();
+    });
+
+    document.getElementById('import-json-file').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+
+          // Validation
+          if (!parsed || !Array.isArray(parsed.expenses)) {
+            showToast('Invalid expense backup file.');
+            return;
+          }
+
+          const validExpenses = [];
+          for (const exp of parsed.expenses) {
+            if (!exp.item || typeof exp.price !== 'number' || !exp.date) {
+              continue;
+            }
+            validExpenses.push({
+              id: exp.id || generateId(),
+              item: String(exp.item).trim(),
+              price: Number(exp.price),
+              period: (exp.period === 'night') ? 'night' : 'day',
+              date: String(exp.date),
+              time: exp.time || '12:00',
+              category: exp.category || 'Other',
+              note: exp.note ? String(exp.note) : '',
+              createdAt: exp.createdAt || new Date().toISOString()
+            });
+          }
+
+          if (validExpenses.length === 0) {
+            showToast('No valid expense items found in file.');
+            return;
+          }
+
+          showConfirmModal(
+            'Import Mode',
+            `Found ${validExpenses.length} valid records. Choose whether to replace all current entries or merge with existing entries.`,
+            'Merge Data',
+            () => {
+              // Merge logic: ensure no duplicate IDs
+              const existingIds = new Set(appState.expenses.map(e => e.id));
+              validExpenses.forEach(ve => {
+                if (existingIds.has(ve.id)) {
+                  ve.id = generateId();
+                }
+                appState.expenses.push(ve);
+              });
+              if (parsed.settings) {
+                appState.settings = { ...appState.settings, ...parsed.settings };
+              }
+              saveData();
+              refreshAllViews();
+              showToast('Backup imported and merged successfully');
+            },
+            false
+          );
+
+        } catch (err) {
+          console.error('Import parse error:', err);
+          showToast('Invalid JSON file format.');
+        } finally {
+          e.target.value = '';
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Clear all data with 2-step confirmation
+    document.getElementById('btn-clear-all').addEventListener('click', () => {
+      showConfirmModal(
+        'Confirm Clear (Step 1 of 2)',
+        'This will permanently delete all locally stored expenses. Continue?',
+        'Proceed',
+        () => {
+          setTimeout(() => {
+            showConfirmModal(
+              'Final Warning (Step 2 of 2)',
+              'Are you ABSOLUTELY sure? All entries will be irreversibly erased.',
+              'Permanently Delete All',
+              () => {
+                appState.expenses = [];
+                saveData();
+                refreshAllViews();
+                showToast('All expense data deleted.');
+              },
+              true
+            );
+          }, 300);
+        },
+        true
+      );
+    });
+
+    // Load Demo Data for test
+    document.getElementById('btn-load-demo').addEventListener('click', () => {
+      const today = new Date();
+      const demoExpenses = [];
+      const sampleCats = ['Food', 'Travel', 'Education', 'Mobile/Internet', 'Hostel/Room', 'Entertainment'];
+      const sampleNames = ['Mess Breakfast', 'Bus Pass Recharge', 'Course Notebook', 'Hostel Laundry', 'Evening Snacks', 'Stationery items', 'Dinner with roommates'];
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        const dStr = getFormattedDate(d);
+
+        demoExpenses.push({
+          id: generateId(),
+          item: sampleNames[i % sampleNames.length],
+          price: Math.floor(Math.random() * 250) + 40,
+          period: (i % 2 === 0) ? 'day' : 'night',
+          date: dStr,
+          time: (i % 2 === 0) ? '10:30' : '20:15',
+          category: sampleCats[i % sampleCats.length],
+          note: 'Demo testing entry',
+          createdAt: new Date().toISOString()
+        });
+      }
+
+      appState.expenses = [...demoExpenses, ...appState.expenses];
+      saveData();
+      refreshAllViews();
+      showToast('Demo data loaded successfully');
+    });
+
+    /* ==========================================================================
+       NAVIGATION & VIEW SWITCHING
+       ========================================================================== */
+    function navigateToTab(targetId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.target === targetId));
+
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        targetSection.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (targetId === 'history-view') {
+        renderHistory();
+      }
+      if (targetId === 'add-view' && !document.getElementById('entry-id').value) {
+        resetEntryForm();
+      }
+    }
+
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        navigateToTab(tab.dataset.target);
+      });
+    });
+
+    document.getElementById('header-add-btn').addEventListener('click', () => {
+      resetEntryForm();
+      navigateToTab('add-view');
+    });
+
+    document.getElementById('home-view-all-btn').addEventListener('click', () => {
+      navigateToTab('history-view');
+    });
+
+    // History filter chips
+    document.querySelectorAll('#period-chips .chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('#period-chips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        renderHistory();
+      });
+    });
+
+    document.getElementById('history-search').addEventListener('input', renderHistory);
+    document.getElementById('history-category-filter').addEventListener('change', renderHistory);
+    document.getElementById('history-sort-select').addEventListener('change', renderHistory);
+    document.getElementById('history-from-date').addEventListener('change', renderHistory);
+    document.getElementById('history-to-date').addEventListener('change', renderHistory);
+
+    /* ==========================================================================
+       GLOBAL REFRESH & INIT
+       ========================================================================== */
+    function refreshAllViews() {
+      renderDashboard();
+      renderHistory();
+      loadSettingsUI();
+    }
+
+    function initApp() {
+      loadData();
+      applyTheme(appState.settings.theme);
+      resetEntryForm();
+      loadSettingsUI();
+      refreshAllViews();
+
+      // Listen to OS theme changes if user selected system
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          if (appState.settings.theme === 'system') {
+            applyTheme('system');
+          }
+        });
+      }
+    }
+
+    /* ==========================================================================
+       PWA / OFFLINE SUPPORT
+       ========================================================================== */
+    let deferredInstallPrompt = null;
+
+    function updateNetworkUI() {
+      const offline = !navigator.onLine;
+      const banner = document.getElementById('offline-banner');
+      const dot = document.getElementById('pwa-status-dot');
+      const text = document.getElementById('pwa-status-text');
+      if (banner) banner.classList.toggle('show', offline);
+      if (dot) dot.classList.toggle('offline', offline);
+      if (text) text.textContent = offline ? 'Offline — local data is available' : 'Online — app is ready for offline use';
+    }
+
+    window.addEventListener('online', updateNetworkUI);
+    window.addEventListener('offline', updateNetworkUI);
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      const btn = document.getElementById('btn-install-app');
+      if (btn) btn.classList.add('show');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredInstallPrompt = null;
+      const btn = document.getElementById('btn-install-app');
+      if (btn) btn.classList.remove('show');
+      showToast('App installed successfully');
+    });
+
+    document.getElementById('btn-install-app')?.addEventListener('click', async () => {
+      if (!deferredInstallPrompt) {
+        showToast('Chrome install option is not available yet');
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      document.getElementById('btn-install-app')?.classList.remove('show');
+    });
+
+    document.getElementById('btn-update-app')?.addEventListener('click', async () => {
+      if (!('serviceWorker' in navigator)) { showToast('Offline engine is not supported'); return; }
+      const reg = await navigator.serviceWorker.getRegistration();
+      if (reg) { await reg.update(); showToast('Update check completed'); }
+      else showToast('Offline engine is starting…');
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          await navigator.serviceWorker.register('./sw.js', { scope: './' });
+          updateNetworkUI();
+        } catch (err) {
+          console.error('Service worker registration failed:', err);
+          const text = document.getElementById('pwa-status-text');
+          if (text) text.textContent = 'Browser mode — offline installation unavailable';
+        }
+      });
+    }
+
+    // Initialize once DOM is fully available
+    document.addEventListener('DOMContentLoaded', () => {
+      initApp();
+      updateNetworkUI();
+    });
+  </script>
+</body>
+</html>
