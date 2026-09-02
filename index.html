@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Student Expense Tracker</title>
   <meta name="theme-color" content="#2563eb">
-  <meta name="description" content="Private offline student expense tracker for daily, weekly and monthly spending.">
+  <meta name="description" content="Professional offline student daily expense tracker">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="./manifest.json">
-  <link rel="icon" href="./icons/icon-192.png">
-  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>Student Daily Expense Tracker</title>
   <style>
     :root {
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -657,18 +655,6 @@
         grid-column: 1 / -1;
       }
     }
-
-    /* PWA / Offline UI */
-    .offline-banner{display:none;position:sticky;top:56px;z-index:35;background:#f59e0b;color:#111827;padding:7px 12px;text-align:center;font-size:.78rem;font-weight:700}
-    .offline-banner.show{display:block}
-    .pwa-install-card{border:1px solid var(--primary);background:var(--primary-light)}
-    .pwa-status{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-muted);margin:8px 0 12px}
-    .status-dot{width:9px;height:9px;border-radius:50%;background:var(--success);flex:none}
-    .status-dot.offline{background:var(--warning)}
-    .install-btn{display:none}
-    .install-btn.show{display:inline-flex}
-    .small-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-    @media(max-width:420px){.small-actions{grid-template-columns:1fr}.offline-banner{top:56px}}
   </style>
 </head>
 <body>
@@ -679,7 +665,6 @@
     </div>
     <button class="header-quick-add" id="header-add-btn" aria-label="Add Expense" title="Quick Add">＋</button>
   </header>
-  <div id="offline-banner" class="offline-banner">Offline mode — your saved data and app are still available.</div>
 
   <div class="app-container">
     
@@ -964,16 +949,6 @@
             <option value="dark">Dark Mode</option>
           </select>
         </div>
-      </div>
-
-      <div class="card pwa-install-card">
-        <div class="card-title">App & Offline Mode</div>
-        <div class="pwa-status"><span id="pwa-status-dot" class="status-dot"></span><span id="pwa-status-text">Checking app status…</span></div>
-        <div class="small-actions">
-          <button class="btn btn-primary install-btn" id="btn-install-app">Install App</button>
-          <button class="btn btn-outline" id="btn-update-app">Check for Update</button>
-        </div>
-        <p class="text-xs text-muted" style="margin-top:10px;">Install from Chrome to use this tracker like an app. After the first successful online load, the app shell is cached for offline use.</p>
       </div>
 
       <div class="card">
@@ -2031,74 +2006,29 @@
       }
     }
 
-    /* ==========================================================================
-       PWA / OFFLINE SUPPORT
-       ========================================================================== */
-    let deferredInstallPrompt = null;
-
-    function updateNetworkUI() {
-      const offline = !navigator.onLine;
-      const banner = document.getElementById('offline-banner');
-      const dot = document.getElementById('pwa-status-dot');
-      const text = document.getElementById('pwa-status-text');
-      if (banner) banner.classList.toggle('show', offline);
-      if (dot) dot.classList.toggle('offline', offline);
-      if (text) text.textContent = offline ? 'Offline — local data is available' : 'Online — app is ready for offline use';
-    }
-
-    window.addEventListener('online', updateNetworkUI);
-    window.addEventListener('offline', updateNetworkUI);
-
-    window.addEventListener('beforeinstallprompt', (event) => {
-      event.preventDefault();
-      deferredInstallPrompt = event;
-      const btn = document.getElementById('btn-install-app');
-      if (btn) btn.classList.add('show');
-    });
-
-    window.addEventListener('appinstalled', () => {
-      deferredInstallPrompt = null;
-      const btn = document.getElementById('btn-install-app');
-      if (btn) btn.classList.remove('show');
-      showToast('App installed successfully');
-    });
-
-    document.getElementById('btn-install-app')?.addEventListener('click', async () => {
-      if (!deferredInstallPrompt) {
-        showToast('Chrome install option is not available yet');
-        return;
-      }
-      deferredInstallPrompt.prompt();
-      await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      document.getElementById('btn-install-app')?.classList.remove('show');
-    });
-
-    document.getElementById('btn-update-app')?.addEventListener('click', async () => {
-      if (!('serviceWorker' in navigator)) { showToast('Offline engine is not supported'); return; }
-      const reg = await navigator.serviceWorker.getRegistration();
-      if (reg) { await reg.update(); showToast('Update check completed'); }
-      else showToast('Offline engine is starting…');
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          await navigator.serviceWorker.register('./sw.js', { scope: './' });
-          updateNetworkUI();
-        } catch (err) {
-          console.error('Service worker registration failed:', err);
-          const text = document.getElementById('pwa-status-text');
-          if (text) text.textContent = 'Browser mode — offline installation unavailable';
-        }
-      });
-    }
-
     // Initialize once DOM is fully available
-    document.addEventListener('DOMContentLoaded', () => {
-      initApp();
-      updateNetworkUI();
-    });
+    document.addEventListener('DOMContentLoaded', initApp);
+  </script>
+  <script>
+    // PWA / offline support
+    (function () {
+      const updateOnlineState = () => {
+        document.documentElement.dataset.online = navigator.onLine ? "true" : "false";
+      };
+      window.addEventListener("online", updateOnlineState);
+      window.addEventListener("offline", updateOnlineState);
+      updateOnlineState();
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js", { scope: "./" })
+            .then(registration => {
+              registration.update().catch(() => {});
+            })
+            .catch(error => console.warn("Offline service worker unavailable:", error));
+        });
+      }
+    })();
   </script>
 </body>
 </html>
